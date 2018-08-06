@@ -1,0 +1,54 @@
+buildscript {
+	ext {
+		projectReactorVersion = '0.7.8.RELEASE'
+	}
+	
+	// Common repositories:
+	apply from: "${gradleUserHome}/repos.gradle", to: buildscript
+	
+    dependencies {
+        classpath("org.junit.platform:junit-platform-gradle-plugin:${junitPlatformVersion}")
+    }
+}
+
+apply plugin: 'java'
+apply plugin: 'eclipse'
+apply plugin: 'org.junit.platform.gradle.plugin'
+apply plugin: 'maven-publish'
+
+group = 'com.siemens.ra.ts.nettysocketlibrary'
+version = '1.0.0-SNAPSHOT'
+sourceCompatibility = 10
+targetCompatibility = 10
+
+repositories {
+}
+
+dependencies {
+	compile("org.slf4j:slf4j-simple:${slf4jVersion}")
+	compile("io.projectreactor.ipc:reactor-netty:${projectReactorVersion}")
+    testCompile("org.junit.jupiter:junit-jupiter-api:${junitJupiterVersion}")
+    testCompile("org.assertj:assertj-core:${assertjVersion}")
+    testCompile("org.awaitility:awaitility:${awaitilityVersion}")
+    testRuntime("org.junit.jupiter:junit-jupiter-engine:${junitJupiterVersion}")
+	testRuntime("org.junit.platform:junit-platform-runner:${junitPlatformVersion}")
+}
+
+publishing {
+    task sourcesJar ( type: Jar, dependsOn: classes ) {
+            classifier 'sources'
+            from sourceSets.main.allJava
+    }
+
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+            artifact sourcesJar
+        }
+    }
+}
+
+publishing {
+	// Publish repository:
+	apply from: "${gradleUserHome}/publish.gradle", to: buildscript
+}
