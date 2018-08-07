@@ -13,11 +13,15 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Flow;
-import java.util.concurrent.LinkedBlockingDeque;
-import java.util.concurrent.SubmissionPublisher;
 import java.util.concurrent.Flow.Subscriber;
 import java.util.concurrent.Flow.Subscription;
+import java.util.concurrent.LinkedBlockingDeque;
+import java.util.concurrent.SubmissionPublisher;
 
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,6 +32,7 @@ import com.siemens.ra.ts.nettysocketlibrary.messages.ChannelActivated;
 import com.siemens.ra.ts.nettysocketlibrary.messages.ChannelInactivated;
 import com.siemens.ra.ts.nettysocketlibrary.messages.ChannelRead;
 import com.siemens.ra.ts.nettysocketlibrary.messages.ChannelRegistered;
+import com.siemens.ra.ts.nettysocketlibrary.utils.CliUtils;
 
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;
@@ -288,17 +293,24 @@ public class SocketConsumer implements Flow.Subscriber<ChannelMessage>, Runnable
   }
 
   public static void main(String[] args) {
+    // Default values:
+    String host = "localhost";
     int port = 9999;
-    if (args.length > 0) {
-      try {
-        port = Integer.parseInt(args[0]);
-      } catch (NumberFormatException e) {
-        System.err.println("Argument" + args[0] + " must be an integer! Use default value 9999");
-      }
+
+    Options options = CliUtils.createCliOptions(); 
+    HelpFormatter formatter = new HelpFormatter();
+    try {
+        CommandLine cmd = CliUtils.createCommandLine(args, options);
+        host = cmd.getOptionValue("host"); // e.g.: localhost or 192.168.99.100
+        port = Integer.parseInt(cmd.getOptionValue("port")); // e.g.: 9092
+    } catch (NumberFormatException | ParseException e) {
+        System.err.println(e.getMessage());
+        formatter.printHelp("SocketConsumer", options);
+        System.out.println("Using default values: " + host + ":" + port);
     }
     
-    SocketConsumer socketConsumer = new SocketConsumer("127.0.0.1", port);
+    SocketConsumer socketConsumer = new SocketConsumer(host, port);
     socketConsumer.setChannelInitializer(new DefaultInitializer(new DefaultHandler(socketConsumer)));
     socketConsumer.run();
-  }
+  }  
 }

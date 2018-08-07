@@ -15,6 +15,10 @@ import java.util.concurrent.SubmissionPublisher;
 import java.util.concurrent.Flow.Subscriber;
 import java.util.concurrent.Flow.Subscription;
 
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,6 +29,7 @@ import com.siemens.ra.ts.nettysocketlibrary.messages.ChannelActivated;
 import com.siemens.ra.ts.nettysocketlibrary.messages.ChannelInactivated;
 import com.siemens.ra.ts.nettysocketlibrary.messages.ChannelRead;
 import com.siemens.ra.ts.nettysocketlibrary.messages.ChannelRegistered;
+import com.siemens.ra.ts.nettysocketlibrary.utils.CliUtils;
 
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
@@ -229,7 +234,21 @@ public class SocketProducer implements Flow.Subscriber<ChannelMessage>, Runnable
   }
 
   public static void main(String[] args) {
-    SocketProducer socketProducer = new SocketProducer(44500);
+    // Default value
+    int port = 9999;
+    
+    Options options = CliUtils.createCliOption(); 
+    HelpFormatter formatter = new HelpFormatter();
+    try {
+        CommandLine cmd = CliUtils.createCommandLine(args, options);
+        port = Integer.parseInt(cmd.getOptionValue("port")); // e.g.: 9092
+    } catch (NumberFormatException | ParseException e) {
+        System.err.println(e.getMessage());
+        formatter.printHelp("SocketProducer", options);
+        System.out.println("Using default value: " + port);
+    }
+
+    SocketProducer socketProducer = new SocketProducer(port);
     socketProducer.setChannelInitializer(new DefaultInitializer(new DefaultHandler(socketProducer)));
     socketProducer.run();
   }
