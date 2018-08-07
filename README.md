@@ -4,8 +4,18 @@ A library providing reactive socket producer and consumer functionality.
 Some preconditions:
 1. Define GRADLE_USER_HOME as environment variable, e.g. GRADLE_USER_HOME=$HOME/DEV/gradle-user-home.
   (Location of local gradle repository)
-2. Provide <strong>repos.gradle</strong> in $HOME/DEV/gradle-user-home.
-3. Provide <strong>init.gradle</strong> in $HOME/DEV/gradle-user-home.
+2. Provide <strong>repos.gradle</strong> in $HOME/DEV/gradle-user-home:
+<pre><code>repositories {
+  maven { 
+    url uri(System.getenv("GRADLE_USER_HOME"))
+  }
+  mavenLocal()
+  mavenCentral()
+  maven { url "https://repo.spring.io/snapshot" }
+  maven { url "https://repo.spring.io/milestone" }
+}
+</code></pre>
+3. Provide <strong>init.gradle</strong> in $HOME/DEV/gradle-user-home:
 <pre><code>allprojects {
     ext {
       slf4jVersion = '1.8.0-beta2'
