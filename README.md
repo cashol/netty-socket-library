@@ -1,5 +1,6 @@
 # netty-socket-library
-A library providing reactive socket producer and consumer functionality. 
+A library providing reactive socket producer and consumer functionality.
+Look at <a href="https://github.com/tronprotocol/java-tron/archive/develop.zip">Download the ZIP</a> for usage.
 
 Some preconditions:
 1. Define GRADLE_USER_HOME as environment variable, e.g. GRADLE_USER_HOME=$HOME/DEV/gradle-user-home.
