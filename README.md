@@ -11,8 +11,6 @@ Some preconditions:
   }
   mavenLocal()
   mavenCentral()
-  maven { url "https://repo.spring.io/snapshot" }
-  maven { url "https://repo.spring.io/milestone" }
 }
 </code></pre>
 3. Provide <strong>init.gradle</strong> in $HOME/DEV/gradle-user-home:
