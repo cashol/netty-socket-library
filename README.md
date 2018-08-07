@@ -5,7 +5,7 @@ Some preconditions:
 1. Define GRADLE_USER_HOME as environment variable, e.g. GRADLE_USER_HOME=$HOME/DEV/gradle-user-home.
   (Location of local gradle repository)
 2. Provide repos.gradle in $HOME/DEV/gradle-user-home.
-3. Provide <p><strong>init.gradle</strong></p> in $HOME/DEV/gradle-user-home.
+3. Provide <strong>init.gradle</strong> in $HOME/DEV/gradle-user-home.
 <pre><code>allprojects {
     ext {
       slf4jVersion = '1.8.0-beta2'
