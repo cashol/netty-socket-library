@@ -1,5 +1,5 @@
 # netty-socket-library
-A library providing reactive socket producer and consumer functionality.
+A library providing reactive socket producer and consumer functionality.<br/>
 Look at <a href="https://github.com/cashol/netty-socket-library/blob/master/src/test/java/com/siemens/ra/ts/nettysocketlibrary/test/NettySocketLibraryTest.java">NettySocketLibraryTest.java</a> for usage.
 
 Some preconditions:
