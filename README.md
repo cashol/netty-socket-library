@@ -33,7 +33,7 @@ Some preconditions:
 4. Provide <strong>publish.gradle</strong> in $HOME/DEV/gradle-user-home:
 <pre><code>repositories {
   maven {
-    // Set correct ip address and port
+    // Set correct values for ip address, port and credentials
     url "http://10.10.10.10:8081/nexus/content/repositories/snapshots/"
       credentials {
         username 'user'
