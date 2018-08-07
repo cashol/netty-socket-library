@@ -40,6 +40,7 @@ Some preconditions:
         username 'user'
         password 'password'
       }
+    }
   }
 }
 </code></pre>
