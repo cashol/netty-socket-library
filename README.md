@@ -4,8 +4,8 @@ A library providing reactive socket producer and consumer functionality.
 Some preconditions:
 1. Define GRADLE_USER_HOME as environment variable, e.g. GRADLE_USER_HOME=$HOME/DEV/gradle-user-home.
   (Location of local gradle repository)
-2. Provide init.gradle in $HOME/DEV/gradle-user-home.
-<p><strong>init.gradle:</strong></p>
+2. Provide repos.gradle in $HOME/DEV/gradle-user-home.
+3. Provide <p><strong>init.gradle</strong></p> in $HOME/DEV/gradle-user-home.
 <pre><code>allprojects {
     ext {
       slf4jVersion = '1.8.0-beta2'
@@ -22,5 +22,4 @@ Some preconditions:
     apply from: "${gradleUserHome}/repos.gradle", to: allprojects
   }
 </code></pre>
-3. Provide repos.gradle in $HOME/DEV/gradle-user-home.
 4. Provide publish.gradle in $HOME/DEV/gradle-user-home.
