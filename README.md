@@ -32,4 +32,14 @@ Some preconditions:
     apply from: "${gradleUserHome}/repos.gradle", to: allprojects
   }
 </code></pre>
-4. Provide <strong>publish.gradle</strong> in $HOME/DEV/gradle-user-home.
+4. Provide <strong>publish.gradle</strong> in $HOME/DEV/gradle-user-home:
+<pre><code>repositories {
+  maven {
+    url "http://10.10.10.10:8081/nexus/content/repositories/snapshots/"
+      credentials {
+        username 'user'
+        password 'password'
+      }
+  }
+}
+</code></pre>
