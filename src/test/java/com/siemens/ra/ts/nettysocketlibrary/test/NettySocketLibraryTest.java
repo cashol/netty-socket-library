@@ -2,9 +2,6 @@ package com.siemens.ra.ts.nettysocketlibrary.test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -82,8 +79,10 @@ class NettySocketLibraryTest {
       }
     };
     executorService.execute(connectionThread);
-    Thread.sleep(100);
-    assertThat(connected).isTrue();
+    
+    await()
+      .atLeast(100, TimeUnit.MILLISECONDS).atMost(200, TimeUnit.MILLISECONDS)
+      .until(() -> connected);
   }
 
   @Nested
@@ -108,9 +107,9 @@ class NettySocketLibraryTest {
       socketProducer.send(PRODUCER_MESSAGE);
       socketConsumer.send(CONSUMER_MESSAGE);
 
-      Thread.sleep(100);
-
-      assertThat(socketConsumer.receive()).isNotEmpty();
+      await()
+        .atLeast(100, TimeUnit.MILLISECONDS).atMost(200, TimeUnit.MILLISECONDS)
+        .until(() -> !socketConsumer.receive().isEmpty());
       assertThat(socketConsumer.receive().take()).isEqualTo(PRODUCER_MESSAGE);
       assertThat(socketConsumer.receive()).isEmpty();
 
@@ -133,6 +132,38 @@ class NettySocketLibraryTest {
       isConsumerConnected();
     }
 
+    @Test
+    @DisplayName("is consumer subscribed")
+    void isConsumerSubscribed() throws InterruptedException {
+      // when
+      socketConsumer.addSubscriber(this);
+
+      // then
+      await()
+        .atLeast(100, TimeUnit.MILLISECONDS).atMost(200, TimeUnit.MILLISECONDS)
+        .until(() -> subscription != null);
+    }
+
+    @Test
+    @DisplayName("was message received")
+    void wasMessageReceived() throws InterruptedException, IOException {
+      // prepare
+      socketConsumer.addSubscriber(this);
+      await()
+        .atLeast(100, TimeUnit.MILLISECONDS).atMost(200, TimeUnit.MILLISECONDS)
+        .until(() -> subscription != null);
+
+      // when
+      socketProducer.send(PRODUCER_MESSAGE);
+
+      // then
+      await()
+        .atLeast(100, TimeUnit.MILLISECONDS).atMost(200, TimeUnit.MILLISECONDS)
+        .until(() -> !receivedMessages.isEmpty());
+      assertThat(receivedMessages.size()).isEqualTo(1);
+      assertThat(receivedMessages.get(0)).isEqualTo(PRODUCER_MESSAGE);
+    }
+    
     @Override
     public void onSubscribe(Subscription subscription) {
       LOGGER.info("Consumer subscribed");
@@ -155,32 +186,6 @@ class NettySocketLibraryTest {
     @Override
     public void onComplete() {
       LOGGER.info("Subscription completed");
-    }
-
-    @Test
-    @DisplayName("is consumer subscribed")
-    void isConsumerSubscribed() throws InterruptedException {
-      // when
-      socketConsumer.addSubscriber(this);
-
-      // then
-      await().atLeast(100, TimeUnit.MILLISECONDS).until(() -> subscription != null);
-    }
-
-    @Test
-    @DisplayName("was message received")
-    void wasMessageReceived() throws InterruptedException, IOException {
-      // prepare
-      socketConsumer.addSubscriber(this);
-      await().atLeast(100, TimeUnit.MILLISECONDS).until(() -> subscription != null);
-
-      // when
-      socketProducer.send(PRODUCER_MESSAGE);
-
-      // then
-      await().atLeast(100, TimeUnit.MILLISECONDS).until(() -> !receivedMessages.isEmpty());
-      assertThat(receivedMessages.size()).isEqualTo(1);
-      assertThat(receivedMessages.get(0)).isEqualTo(PRODUCER_MESSAGE);
     }
   }
 }
