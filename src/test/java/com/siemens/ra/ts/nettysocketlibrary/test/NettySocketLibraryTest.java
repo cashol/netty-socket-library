@@ -81,7 +81,7 @@ class NettySocketLibraryTest {
     executorService.execute(connectionThread);
     
     await()
-      .atLeast(100, TimeUnit.MILLISECONDS).atMost(200, TimeUnit.MILLISECONDS)
+      .atMost(200, TimeUnit.MILLISECONDS)
       .until(() -> connected);
   }
 
@@ -108,7 +108,7 @@ class NettySocketLibraryTest {
       socketConsumer.send(CONSUMER_MESSAGE);
 
       await()
-        .atLeast(100, TimeUnit.MILLISECONDS).atMost(200, TimeUnit.MILLISECONDS)
+        .atMost(200, TimeUnit.MILLISECONDS)
         .until(() -> !socketConsumer.receive().isEmpty());
       assertThat(socketConsumer.receive().take()).isEqualTo(PRODUCER_MESSAGE);
       assertThat(socketConsumer.receive()).isEmpty();
@@ -140,7 +140,7 @@ class NettySocketLibraryTest {
 
       // then
       await()
-        .atLeast(100, TimeUnit.MILLISECONDS).atMost(200, TimeUnit.MILLISECONDS)
+        .atMost(200, TimeUnit.MILLISECONDS)
         .until(() -> subscription != null);
     }
 
@@ -150,7 +150,7 @@ class NettySocketLibraryTest {
       // prepare
       socketConsumer.addSubscriber(this);
       await()
-        .atLeast(100, TimeUnit.MILLISECONDS).atMost(200, TimeUnit.MILLISECONDS)
+        .atMost(200, TimeUnit.MILLISECONDS)
         .until(() -> subscription != null);
 
       // when
@@ -158,7 +158,7 @@ class NettySocketLibraryTest {
 
       // then
       await()
-        .atLeast(100, TimeUnit.MILLISECONDS).atMost(200, TimeUnit.MILLISECONDS)
+        .atMost(200, TimeUnit.MILLISECONDS)
         .until(() -> !receivedMessages.isEmpty());
       assertThat(receivedMessages.size()).isEqualTo(1);
       assertThat(receivedMessages.get(0)).isEqualTo(PRODUCER_MESSAGE);
