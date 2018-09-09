@@ -37,10 +37,13 @@ dependencies {
 }
 
 publishing {
-    task sourcesJar ( type: Jar, dependsOn: classes ) {
-            classifier 'sources'
-            from sourceSets.main.allJava
-    }
+	task sourcesJar ( type: Jar, dependsOn: classes ) {
+		classifier 'sources'
+	    from sourceSets.main.allJava
+	}
+	
+	// Publish repository:
+	apply from: "${gradleUserHome}/publish.gradle", to: publishing
 
     publications {
         mavenJava(MavenPublication) {
@@ -48,9 +51,4 @@ publishing {
             artifact sourcesJar
         }
     }
-}
-
-publishing {
-	// Publish repository:
-	apply from: "${gradleUserHome}/publish.gradle", to: buildscript
 }
