@@ -1,4 +1,4 @@
-package com.siemens.ra.ts.nettysocketlibrary.utils;
+package com.siemens.ra.cg.nettysocketlibrary.utils;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;

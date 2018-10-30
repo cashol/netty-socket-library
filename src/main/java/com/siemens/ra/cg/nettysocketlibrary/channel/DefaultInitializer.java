@@ -1,4 +1,4 @@
-package com.siemens.ra.ts.nettysocketlibrary.channel;
+package com.siemens.ra.cg.nettysocketlibrary.channel;
 
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;

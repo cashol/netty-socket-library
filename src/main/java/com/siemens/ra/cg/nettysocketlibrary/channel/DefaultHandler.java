@@ -1,16 +1,16 @@
-package com.siemens.ra.ts.nettysocketlibrary.channel;
+package com.siemens.ra.cg.nettysocketlibrary.channel;
 
 import java.util.concurrent.Flow.Subscriber;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.siemens.ra.ts.nettysocketlibrary.messages.ChannelActivated;
-import com.siemens.ra.ts.nettysocketlibrary.messages.ChannelExceptionCaught;
-import com.siemens.ra.ts.nettysocketlibrary.messages.ChannelInactivated;
-import com.siemens.ra.ts.nettysocketlibrary.messages.ChannelRead;
-import com.siemens.ra.ts.nettysocketlibrary.messages.ChannelReadCompleted;
-import com.siemens.ra.ts.nettysocketlibrary.messages.ChannelRegistered;
+import com.siemens.ra.cg.nettysocketlibrary.messages.ChannelActivated;
+import com.siemens.ra.cg.nettysocketlibrary.messages.ChannelExceptionCaught;
+import com.siemens.ra.cg.nettysocketlibrary.messages.ChannelInactivated;
+import com.siemens.ra.cg.nettysocketlibrary.messages.ChannelRead;
+import com.siemens.ra.cg.nettysocketlibrary.messages.ChannelReadCompleted;
+import com.siemens.ra.cg.nettysocketlibrary.messages.ChannelRegistered;
 
 import java.util.concurrent.SubmissionPublisher;
 

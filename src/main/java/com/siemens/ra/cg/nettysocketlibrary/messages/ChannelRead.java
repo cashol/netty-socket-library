@@ -1,6 +1,6 @@
-package com.siemens.ra.ts.nettysocketlibrary.messages;
+package com.siemens.ra.cg.nettysocketlibrary.messages;
 
-import com.siemens.ra.ts.nettysocketlibrary.channel.ChannelMessage;
+import com.siemens.ra.cg.nettysocketlibrary.channel.ChannelMessage;
 
 import io.netty.channel.ChannelHandlerContext;
 

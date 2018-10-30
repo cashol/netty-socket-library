@@ -1,35 +1,31 @@
-package com.siemens.ra.ts.nettysocketlibrary.producer;
+package com.siemens.ra.cg.nettysocketlibrary.producer;
 
 import static java.util.concurrent.Executors.newSingleThreadExecutor;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.net.SocketAddress;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Flow;
-import java.util.concurrent.LinkedBlockingDeque;
-import java.util.concurrent.SubmissionPublisher;
 import java.util.concurrent.Flow.Subscriber;
 import java.util.concurrent.Flow.Subscription;
+import java.util.concurrent.LinkedBlockingDeque;
+import java.util.concurrent.SubmissionPublisher;
 
-import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.HelpFormatter;
-import org.apache.commons.cli.Options;
-import org.apache.commons.cli.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.siemens.ra.ts.nettysocketlibrary.channel.ChannelMessage;
-import com.siemens.ra.ts.nettysocketlibrary.channel.DefaultHandler;
-import com.siemens.ra.ts.nettysocketlibrary.channel.DefaultInitializer;
-import com.siemens.ra.ts.nettysocketlibrary.messages.ChannelActivated;
-import com.siemens.ra.ts.nettysocketlibrary.messages.ChannelInactivated;
-import com.siemens.ra.ts.nettysocketlibrary.messages.ChannelRead;
-import com.siemens.ra.ts.nettysocketlibrary.messages.ChannelRegistered;
-import com.siemens.ra.ts.nettysocketlibrary.utils.CliUtils;
+import com.siemens.ra.cg.nettysocketlibrary.channel.ChannelMessage;
+import com.siemens.ra.cg.nettysocketlibrary.channel.DefaultHandler;
+import com.siemens.ra.cg.nettysocketlibrary.channel.DefaultInitializer;
+import com.siemens.ra.cg.nettysocketlibrary.messages.ChannelActivated;
+import com.siemens.ra.cg.nettysocketlibrary.messages.ChannelInactivated;
+import com.siemens.ra.cg.nettysocketlibrary.messages.ChannelRead;
+import com.siemens.ra.cg.nettysocketlibrary.messages.ChannelRegistered;
 
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
@@ -52,19 +48,23 @@ public class SocketProducer implements Flow.Subscriber<ChannelMessage>, Runnable
   private EventLoopGroup workerGroup = new NioEventLoopGroup();
   private ServerBootstrap bootstrap = new ServerBootstrap();
   private ChannelFuture channelFuture;
-  
+
   private Flow.Subscription subscription;
   private ChannelHandlerContext ctx;
   private final BlockingQueue<String> receivedMessages = new LinkedBlockingDeque<>();
   private final SubmissionPublisher<String> messagePublisher = new SubmissionPublisher<>();
 
-  private int port;
+  private SocketAddress socketAddress;
   private DefaultInitializer channelInitializer;
 
-  public SocketProducer(int port) {
-    super();
-    this.port = port;
+  public SocketProducer(String host, int port) {
+    this(new InetSocketAddress(host, port));
   }
+  
+  public SocketProducer(SocketAddress socketAddress) {
+    this.socketAddress = socketAddress;
+  }
+
 
   public void addSubscriber(final Subscriber<String> messageSubscriber) {
     if (messageSubscriber != null) {
@@ -89,7 +89,7 @@ public class SocketProducer implements Flow.Subscriber<ChannelMessage>, Runnable
     try {
       bootstrap.group(bossGroup, workerGroup)
           .channel(NioServerSocketChannel.class)
-          .localAddress(new InetSocketAddress("localhost", port))
+          .localAddress(socketAddress)
           .option(ChannelOption.SO_BACKLOG, 128)
           .childOption(ChannelOption.SO_KEEPALIVE, true)
           .childHandler(channelInitializer);
@@ -234,22 +234,36 @@ public class SocketProducer implements Flow.Subscriber<ChannelMessage>, Runnable
   }
 
   public static void main(String[] args) {
-    // Default value
+    // Default values:
+    String host = "localhost";
     int port = 9999;
-    
-    Options options = CliUtils.createCliOption(); 
-    HelpFormatter formatter = new HelpFormatter();
-    try {
-        CommandLine cmd = CliUtils.createCommandLine(args, options);
-        port = Integer.parseInt(cmd.getOptionValue("port")); // e.g.: 9092
-    } catch (NumberFormatException | ParseException e) {
-        System.err.println(e.getMessage());
-        formatter.printHelp("SocketProducer", options);
-        System.out.println("Using default value: " + port);
-    }
 
-    SocketProducer socketProducer = new SocketProducer(port);
+    host = getHostProperty(host);
+    port = getPortProperty(port);
+    System.out.println("Using values: " + host + ":" + port);
+    
+    SocketProducer socketProducer = new SocketProducer(host, port);
     socketProducer.setChannelInitializer(new DefaultInitializer(new DefaultHandler(socketProducer)));
     socketProducer.run();
+  }
+  
+  private static String getHostProperty(String host) {
+    String hostProperty = System.getProperty("host");
+    if (hostProperty != null) {
+      host = hostProperty;
+    }
+    return host;
+  }  
+
+  private static int getPortProperty(int port) {
+    String portProperty = System.getProperty("port");
+    if (portProperty != null) {
+      try {
+        port = Integer.parseInt(portProperty);
+      } catch (NumberFormatException e) {
+        System.err.println(e.getMessage());
+      }
+    }
+    return port;
   }
 }

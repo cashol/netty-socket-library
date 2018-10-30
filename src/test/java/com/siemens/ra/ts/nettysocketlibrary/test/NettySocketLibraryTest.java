@@ -21,10 +21,10 @@ import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.siemens.ra.ts.nettysocketlibrary.channel.DefaultHandler;
-import com.siemens.ra.ts.nettysocketlibrary.channel.DefaultInitializer;
-import com.siemens.ra.ts.nettysocketlibrary.consumer.SocketConsumer;
-import com.siemens.ra.ts.nettysocketlibrary.producer.SocketProducer;
+import com.siemens.ra.cg.nettysocketlibrary.channel.DefaultHandler;
+import com.siemens.ra.cg.nettysocketlibrary.channel.DefaultInitializer;
+import com.siemens.ra.cg.nettysocketlibrary.consumer.SocketConsumer;
+import com.siemens.ra.cg.nettysocketlibrary.producer.SocketProducer;
 
 class NettySocketLibraryTest {
   private final Logger LOGGER = LoggerFactory.getLogger(this.getClass());
@@ -40,7 +40,7 @@ class NettySocketLibraryTest {
 
   @BeforeEach
   void createSocketProducerAndConsumer() throws InterruptedException {
-    socketProducer = new SocketProducer(9999);
+    socketProducer = new SocketProducer("localhost", SERVER_PORT);
     socketProducer.setChannelInitializer(new DefaultInitializer(new DefaultHandler(socketProducer)));
     Runnable producerThread = () -> {
       socketProducer.run();
@@ -118,7 +118,7 @@ class NettySocketLibraryTest {
       assertThat(socketProducer.receive()).isEmpty();
     }
   }
-
+  
   @Nested
   @DisplayName("using publisher and subscriber")
   class UsingPublisherSubscriber implements Flow.Subscriber<String> {

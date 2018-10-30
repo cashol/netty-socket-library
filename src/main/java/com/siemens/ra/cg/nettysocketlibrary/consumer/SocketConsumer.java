@@ -1,4 +1,4 @@
-package com.siemens.ra.ts.nettysocketlibrary.consumer;
+package com.siemens.ra.cg.nettysocketlibrary.consumer;
 
 import static java.util.concurrent.Executors.newSingleThreadExecutor;
 
@@ -25,14 +25,14 @@ import org.apache.commons.cli.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.siemens.ra.ts.nettysocketlibrary.channel.ChannelMessage;
-import com.siemens.ra.ts.nettysocketlibrary.channel.DefaultHandler;
-import com.siemens.ra.ts.nettysocketlibrary.channel.DefaultInitializer;
-import com.siemens.ra.ts.nettysocketlibrary.messages.ChannelActivated;
-import com.siemens.ra.ts.nettysocketlibrary.messages.ChannelInactivated;
-import com.siemens.ra.ts.nettysocketlibrary.messages.ChannelRead;
-import com.siemens.ra.ts.nettysocketlibrary.messages.ChannelRegistered;
-import com.siemens.ra.ts.nettysocketlibrary.utils.CliUtils;
+import com.siemens.ra.cg.nettysocketlibrary.channel.ChannelMessage;
+import com.siemens.ra.cg.nettysocketlibrary.channel.DefaultHandler;
+import com.siemens.ra.cg.nettysocketlibrary.channel.DefaultInitializer;
+import com.siemens.ra.cg.nettysocketlibrary.messages.ChannelActivated;
+import com.siemens.ra.cg.nettysocketlibrary.messages.ChannelInactivated;
+import com.siemens.ra.cg.nettysocketlibrary.messages.ChannelRead;
+import com.siemens.ra.cg.nettysocketlibrary.messages.ChannelRegistered;
+import com.siemens.ra.cg.nettysocketlibrary.utils.CliUtils;
 
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;
@@ -296,21 +296,33 @@ public class SocketConsumer implements Flow.Subscriber<ChannelMessage>, Runnable
     // Default values:
     String host = "localhost";
     int port = 9999;
-
-    Options options = CliUtils.createCliOptions(); 
-    HelpFormatter formatter = new HelpFormatter();
-    try {
-        CommandLine cmd = CliUtils.createCommandLine(args, options);
-        host = cmd.getOptionValue("host"); // e.g.: localhost or 192.168.99.100
-        port = Integer.parseInt(cmd.getOptionValue("port")); // e.g.: 9092
-    } catch (NumberFormatException | ParseException e) {
-        System.err.println(e.getMessage());
-        formatter.printHelp("SocketConsumer", options);
-        System.out.println("Using default values: " + host + ":" + port);
-    }
     
+    host = getHostProperty(host);
+    port = getPortProperty(port);
+    System.out.println("Using values: " + host + ":" + port);
+
     SocketConsumer socketConsumer = new SocketConsumer(host, port);
     socketConsumer.setChannelInitializer(new DefaultInitializer(new DefaultHandler(socketConsumer)));
     socketConsumer.run();
+  }
+  
+  private static String getHostProperty(String host) {
+    String hostProperty = System.getProperty("host");
+    if (hostProperty != null) {
+      host = hostProperty;
+    }
+    return host;
   }  
+
+  private static int getPortProperty(int port) {
+    String portProperty = System.getProperty("port");
+    if (portProperty != null) {
+      try {
+        port = Integer.parseInt(portProperty);
+      } catch (NumberFormatException e) {
+        System.err.println(e.getMessage());
+      }
+    }
+    return port;
+  }
 }
